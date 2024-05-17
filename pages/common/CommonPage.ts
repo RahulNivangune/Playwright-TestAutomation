@@ -42,6 +42,7 @@ export class CommonPage{
         if(mainMenu !== ""){
             await this.page.waitForSelector(mainMenu);
             const mainMenuIsVisible = await this.page.locator(mainMenu).isVisible();
+            
             if(mainMenuIsVisible){
                 await this.page.locator(mainMenu).click();
             }
