@@ -1,0 +1,33 @@
+{
+  "name": "playwrightproject",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "Sanity": "npx playwright test --grep @Sanity",
+    "Regression": "npx playwright test --config playwright.config1.js --grep @Regression",
+    "Functional": "npx playwright test --grep @Functional",
+    "TaskManager": "npx playwright test --grep @TaskManager",
+    "Kernel": "npx playwright test --grep @Kernel",
+    "MyWork": "npx playwright test --grep @MyWork",
+    "StoreWalk": "npx playwright test --grep @StoreWalk",
+    "Form": "npx playwright test --grep @Form",
+    "QNote": "npx playwright test --grep @QNote"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "@types/node": "^20.12.8",
+    "allure-playwright": "^2.15.1"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "playwright": "^1.43.1",
+    "playwright-core": "^1.43.1",
+    "undici-types": "^5.26.5"
+  },
+  "description": ""
+}

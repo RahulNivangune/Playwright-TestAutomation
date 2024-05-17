@@ -1,0 +1,8 @@
+{
+	"domainId": "",
+	"authToken": "",
+	"X-reflexis-header-X": "",
+	"localeCode": "",
+	"expiresOn": "",
+	"operation":"logUserIn"
+}
