@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
+//const customtest =  require('../../resources/testdata/AUTOM/excel/TaskManager/TC_419Data');
 import { BaseTest } from '../../utilities/BaseTest';
+//import { DataFunctions } from '../../utilities/DataFunctions';
 import { CommonPage } from '../../pages/common/CommonPage';
 import { LoginPage } from '../../pages/login/LoginPage';
 import { ProjectTypePage } from '../../pages/taskmanager/ProjectTypePage';
@@ -15,14 +17,9 @@ import { ReportsPage } from '../../pages/taskmanager/ReportsPage';
  */
 
 /*******Start Global Variables**************************/
-let objBaseTest: any, objLoginPage: any,objCommonPage: any, objProjectTypePage:any, objProjectInboxPage:any, objReportsPage:any;
-let appUrl= 'https://knlcl01uspt.reflexisinc.com/kernel/views/authenticate/W/AUTOM.view';
-let userName= '1003952', userPassword= '1003952Zebra@123!', projectType='Action',projectName='Program Project Test ZTM 4444',creatorDepartment='Corporate';
-let assignTo= 'Store Manager - Store',projectEndDay='1',visibility='I',priority='1',projectTag='Action Projet',projectNoteTab='Notes',projectAttachmentTab='Attachments';
-let projectDistributionTab= 'Distribution',projectFinalizeTab= 'Finalize',projectAttachmentName='Simple Project Attachment.jpg', distributionByOption='specificStore';
-let projectNotes="<p>A change like this can be difficult to adjust to, so these tasks are assigned to ensure all Kitchen associates understand this new process, as well as countertop quoting basics.</p>";
-let storeName='SR-ROC-Rockford IL.00102', projectSubmissionMessage='Project Submitted to Approval',projectSubmittedStatus= 'Submitted',projectGridColumnIndex= '7';
-
+let objBaseTest: BaseTest, objCommonPage: CommonPage, objLoginPage: LoginPage, objProjectTypePage:ProjectTypePage, objProjectInboxPage:ProjectInboxPage, objReportsPage:ReportsPage;
+let masterData: any, testData: any;
+let projectName:string;
 /*******End Global Variables*****************************/
 
 //Run test file in parallel & serial mode
@@ -32,14 +29,20 @@ let storeName='SR-ROC-Rockford IL.00102', projectSubmissionMessage='Project Subm
 test.describe('All Program Project Test', () => {
 
     //Before All Test
-    test.beforeAll('Initialize Web Environment', async ({ browser }) => {    
+    test.beforeAll('Initialize Web Environment', async ({ browser }) => {
         //Implement code here
+        objBaseTest = new BaseTest();
+        objBaseTest.initializeWebEnvironment();
+        masterData = await objBaseTest.loadMasterTestData();
+        testData = await objBaseTest.loadTestData('TC-419','TC-419');
+        //testData = await objBaseTest.loadJSONTestData('TC-419');
+        
     })
 
    //Before Each Test
     test.beforeEach('Before Each Test', async ({ page }) => {
            //Initialize Pages
-         objBaseTest = new BaseTest(page);
+         
          objCommonPage = new CommonPage(page);
          objLoginPage = new LoginPage(page);
          objProjectTypePage = new ProjectTypePage(page);
@@ -47,54 +50,60 @@ test.describe('All Program Project Test', () => {
          objReportsPage = new ReportsPage(page);
 
           //Load Base url
-          await objBaseTest.loadBaseUrl(appUrl);
+          await objBaseTest.loadBaseUrl(page,masterData.get('Url'));
 
           //Login into application
-          await objLoginPage.doLogin(userName,userPassword);
+          await objLoginPage.doLogin(masterData.get('CreatorUserId').toString(), masterData.get('CreatorUserPassword'));
     })
 
+    /*//Use loop for test data parameterization with different data set
+    for(const data of testData){
+       data.ProjectEndDay //use insteadOf testData.get('ProjectEndDay') in test parameter
+       //add variable in test title ->test(`TC-419_ProgramProject_Test ${data.TestCaseName} @TaskManager,@Sanity,@P1,@Mid`, async ({ page }) => { });
+    }*/
 
     /**TC-419_ProgramProject_Test with Annotations '@TaskManager,@Sanity,@Functional,@P1,@Mid'*/
-    test('TC-419_ProgramProject_Test @TaskManager,@Sanity,@P1,@Mid', async ({ page }) => {
-
+    test('TC-419_ProgramProject_Test @TaskManager,@Sanity,@P1,@Mid', async ({ page }) => {     
+       
         //Create Project
-        await objCommonPage.commonGotoLHSTreeMenu("#menu-RTM20","#main-menu-PRJ1","#submenu-IN1");       
+        await objCommonPage.commonGotoLHSTreeMenu(masterData.get('TaskManagerMenu'),masterData.get('ProjectsSubMenu'),masterData.get('ProjectsInboxMenuLink'));
         await objProjectInboxPage.clickProjectInboxPageCreateNewLink();
-        await objProjectInboxPage.setProjectInboxPageSearchByProjectType(projectType);
-        await objProjectInboxPage.clickProjectInboxPagePojectTypeCardLink(projectType);
+        await objProjectInboxPage.setProjectInboxPageSearchByProjectType(masterData.get('ActionProjectType'));
+        await objProjectInboxPage.clickProjectInboxPagePojectTypeCardLink(masterData.get('ActionProjectType'));
+        projectName=testData.get('ProjectName')+'5555';
         await objProjectInboxPage.setProjectInboxPageProjectName(projectName);
-        await objProjectInboxPage.setProjectInboxPageCreatorDepartments(creatorDepartment);
-        await objProjectInboxPage.clickProjectInboxPageDropdownOptionLink(creatorDepartment);
-        await objProjectInboxPage.setProjectInboxPageAssignto(assignTo);
-        await objProjectInboxPage.clickProjectInboxPageDropdownOptionLink(assignTo);
+        await objProjectInboxPage.setProjectInboxPageCreatorDepartments(masterData.get('CorpDepartment1'));
+        await objProjectInboxPage.clickProjectInboxPageDropdownOptionLink(masterData.get('CorpDepartment1'));
+        await objProjectInboxPage.setProjectInboxPageAssignto(masterData.get('StoreProfile1') +' - '+masterData.get('StoreDepartment1'));
+        await objProjectInboxPage.clickProjectInboxPageDropdownOptionLink(masterData.get('StoreProfile1') +' - '+masterData.get('StoreDepartment1'));
         await objProjectInboxPage.clickProjectInboxPageDatePicker();
         await objProjectInboxPage.clickProjectInboxPageDurationStartDate();
-        await objProjectInboxPage.clickProjectInboxPageDurationEndDate(projectEndDay);
-        await objProjectInboxPage.clickProjectInboxPageVisibilityOptionRadioButton(visibility);
-        await objProjectInboxPage.clickProjectInboxPagePriorityRadioButton(priority);
-        await objProjectInboxPage.setProjectInboxPageProjectTag(projectTag);
+        await objProjectInboxPage.clickProjectInboxPageDurationEndDate(testData.get('ProjectEndDay'));
+        await objProjectInboxPage.clickProjectInboxPageVisibilityOptionRadioButton(masterData.get('ImmediateVisibilityId'));
+        await objProjectInboxPage.clickProjectInboxPagePriorityRadioButton(masterData.get('HighPriority'));
+        await objProjectInboxPage.setProjectInboxPageProjectTag(testData.get('ProjectTag'));
         await objProjectInboxPage.clickProjectInboxPageProjectCreateNextButton();
 
         //Add Project Notes
-        await objProjectInboxPage.clickProjectInboxPageProjectTabLink(projectNoteTab);
+        await objProjectInboxPage.clickProjectInboxPageProjectTabLink(masterData.get('NotesTab'));
         await objProjectInboxPage.clickProjectInboxPageProjectNotes();
-        await objProjectInboxPage.setProjectInboxPageProjectNotes(projectNotes);
+        await objProjectInboxPage.setProjectInboxPageProjectNotes(testData.get('ProjectNotes'));
 
         //Add Project Attachments
-        await objProjectInboxPage.clickProjectInboxPageProjectTabLink(projectAttachmentTab);
-        await objProjectInboxPage.setProjectInboxPageAttachmentsUploadInput(projectAttachmentName);
+        await objProjectInboxPage.clickProjectInboxPageProjectTabLink(masterData.get('AttachmentsTab'));
+        await objProjectInboxPage.setProjectInboxPageAttachmentsUploadInput(testData.get('ProjectAttachmentName'));
 
         //Add Project Distribution
-        await objProjectInboxPage.clickProjectInboxPageProjectTabLink(projectDistributionTab);
-        await objProjectInboxPage.clickProjectInboxPageDistributionByOptionRadioButton(distributionByOption);
-        await objProjectInboxPage.setProjectInboxPageDistributionSearch(storeName);
-        await objProjectInboxPage.clickProjectInboxPageDistributionStoreLink(storeName);
+        await objProjectInboxPage.clickProjectInboxPageProjectTabLink(masterData.get('DistributionTab'));
+        await objProjectInboxPage.clickProjectInboxPageDistributionByOptionRadioButton(masterData.get('DistributionBySpecificStoresValue'));
+        await objProjectInboxPage.setProjectInboxPageDistributionSearch(masterData.get('StoreUnitName1'));
+        await objProjectInboxPage.clickProjectInboxPageDistributionStoreLink(masterData.get('StoreUnitName1'));
         await objProjectInboxPage.clickProjectInboxPageDistributionAddButton();        
 
         //Submit Project
-        await objProjectInboxPage.clickProjectInboxPageProjectTabLink(projectFinalizeTab);
+        await objProjectInboxPage.clickProjectInboxPageProjectTabLink(masterData.get('FinalizeTab'));
         await objProjectInboxPage.clickProjectInboxPageFinalizeSubmitButton();
-        await objProjectInboxPage.setProjectInboxPageProjectSubmissionMessage(projectSubmissionMessage);
+        await objProjectInboxPage.setProjectInboxPageProjectSubmissionMessage(masterData.get('ProjectSubmissionMessage'));
         await objProjectInboxPage.clickProjectInboxPageProjectSubmissionSubmitButton();
         
 
@@ -106,11 +115,15 @@ test.describe('All Program Project Test', () => {
 
         //Verify Submitted Project Name and Status
         await objProjectInboxPage.verifyProjectInboxPageProjectListGridProjectName(projectName);
-        await objProjectInboxPage.verifyProjectInboxPageProjectListGridData(projectName,projectGridColumnIndex,projectSubmittedStatus);
+        await objProjectInboxPage.verifyProjectInboxPageProjectListGridData(projectName,testData.get('ProjectGridColumnIndex'),masterData.get('SubmittedProjectStatus'));
         
     });
 
-    
+    /**Pass the TestData as fixure by extend test annotations behaviour'*/
+    /*customtest.only('TC-419_ProgramProject_Test- Extend Test Behaviour @TaskManager,@Sanity,@P1,@Mid', async ({ page,testData }) => {    
+        console.log("testData from custom test->"+testData.projectName);
+    }); */
+
     //After Each Test
     test.afterEach('After Each Test', async ({ page }) => {
 
@@ -118,7 +131,7 @@ test.describe('All Program Project Test', () => {
         await objLoginPage.doLogout();
 
         //Teardown web environment
-        await objBaseTest.tearDownWebEnvironment();
+        await objBaseTest.tearDownWebEnvironment(page);
     })
 
     //After All Test

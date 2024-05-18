@@ -15,6 +15,9 @@ exports.sum = function add(){
     
 }
 
+async function f4(){
+    return 'hello world'
+}
 
 console.log("Current directory:", __dirname);
 console.log("Current directory1:", __filename);

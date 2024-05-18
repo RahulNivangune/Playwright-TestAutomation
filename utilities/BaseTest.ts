@@ -1,5 +1,5 @@
 import { Page } from "@playwright/test";
-import { CommonPage } from "../pages/common/CommonPage";
+import { DataFunctions } from "../utilities/DataFunctions";
 
 /**
  * @ScriptName : BaseTest
@@ -11,19 +11,58 @@ import { CommonPage } from "../pages/common/CommonPage";
 
 export class BaseTest {
     protected readonly page:Page;   
+    objDataFunctions: DataFunctions;
     
-    /**BaseTest Constructor*/
-    constructor(page:Page) {        
-        this.page = page;
+    // /**BaseTest Constructor*/
+    // constructor(page:Page) {        
+    //     this.page = page;
+    // }
+
+    /**Tear Down Web Environment */
+    async initializeWebEnvironment(){
+        this.objDataFunctions = new DataFunctions();
     }
 
     /**Load Application Url*/
-    async loadBaseUrl(appUrl: string){
-        await this.page.goto(appUrl);
+    async loadBaseUrl(page:Page,appUrl: string){
+        await page.goto(appUrl);
     }
 
      /**Tear Down Web Environment */
-    async tearDownWebEnvironment(){
-        await this.page.close();
+    async tearDownWebEnvironment(page:Page){
+        await page.close();
+    }
+
+     /**Load Test Data */
+     async loadTestData(fileName: string, sheetName: string){
+        let filePath = "\\resources\\testdata\\AUTOM\\excel\\TaskManager\\";
+        const dataMap = await this.objDataFunctions.loadTestData(filePath,fileName,sheetName);
+        console.log("Load Test Data ->" + dataMap);
+        return dataMap;
+    }
+
+    /**Load Test Data */
+    async loadTestSheetData(fileName: string){
+        let filePath = "\\resources\\testdata\\AUTOM\\excel\\TaskManager\\";
+        const dataMap = await this.objDataFunctions.loadTestData(filePath,fileName,fileName);
+        console.log("Load Test Data ->" + dataMap);
+        return dataMap;
+    }
+
+    /**Load Master Test Data Properties */
+    async loadMasterTestData(){
+        let filePath = "\\resources\\testdata\\AUTOM\\properties\\";
+        let fileName ="masterdata";
+        const propertiesData = await this.objDataFunctions.loadPropertiesFileTestData(filePath,fileName);
+        console.log("Master Properties file Test Data ->" + propertiesData);
+        return propertiesData;
+    }
+
+    /**Load JSON Test Data */
+    async loadJSONTestData(fileName: string){
+        let filePath = "\\resources\\testdata\\AUTOM\\excel\\TaskManager\\";
+        const dataMap = await this.objDataFunctions.loadJSONTestData(filePath,fileName);
+        console.log("Load JSON Test Data ->" + dataMap);
+        return dataMap;
     }
 }

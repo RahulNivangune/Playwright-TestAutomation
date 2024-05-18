@@ -234,9 +234,8 @@ export class ProjectInboxPage {
     }
 
     // Set 'Attachments Upload' Input on Project Inbox Page - By Rahul Nivangune -09-May-2024
-    public async setProjectInboxPageAttachmentsUploadInput(projectAttachmentName: string) {
+    public async setProjectInboxPageAttachmentsUploadInput(projectAttachmentName: string) {        
         await this.inp_ProjectAttachmentsUpload.setInputFiles(path.join(process.cwd()+"\\resources\\testdata\\AUTOM\\docs\\", projectAttachmentName));
-        await this.page.waitForTimeout(5000);
     }
 
     //Click Distribution By Option radio button on Project Inbox Page - By Rahul Nivangune -09-May-2024
@@ -250,7 +249,7 @@ export class ProjectInboxPage {
 
     // Set 'Distribution Search' Input on Project Inbox Page - By Rahul Nivangune -09-May-2024
     public async setProjectInboxPageDistributionSearch(storeName: string) {
-        await this.inp_DistributionSearch.isVisible();
+        await this.inp_DistributionSearch.waitFor({state:"visible"});
         await this.inp_DistributionSearch.fill(storeName);
     }
 

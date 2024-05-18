@@ -42,5 +42,6 @@ await page.getByLabel('Choose Type *').locator('span').click();
 await page.getByRole('button',{name:'Add Link'}).click();
 await page.getByRole('heading',{name:'Action', exact:true}).click();
 await page.getByRole('option',{name:'Corporate'}).locator('div').click();
+await page.getByRole('row').filter({has:page.getByText('Notes')});//fine row with have notes test locator
 
 })
