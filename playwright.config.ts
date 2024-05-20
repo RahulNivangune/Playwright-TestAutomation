@@ -21,11 +21,11 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
-  // retries: 1,
+   //retries: process.env.CI ? 2 : 0,
+  retries: 1,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
-  //workers: 1,
+  //workers: process.env.CI ? 1 : undefined,
+  workers: 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   //reporter: 'html',
   reporter: [['html'],["line"],['allure-playwright']],
@@ -54,10 +54,11 @@ export default defineConfig({
   projects: [
     {
       //chrome
-      name: 'chromium',
+      name: 'chrome',
       use: {
         ...devices['Desktop Chrome'],
-        browserName: 'chromium',    
+        channel: 'chrome',//This is use only for chrome
+        //browserName: 'chromium', 
         headless: false,        
         trace: 'on',
         video: 'retain-on-failure',
@@ -98,8 +99,12 @@ export default defineConfig({
     // },
     // {
     //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
+    //   use: { 
+    //     ...devices['Desktop Chrome'], channel: 'chrome',
+    //     headless: false      
+    //   },
+        
+    // }
   ],
 
   /* Run your local dev server before starting the tests */
